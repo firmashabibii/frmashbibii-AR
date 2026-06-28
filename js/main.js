@@ -170,6 +170,7 @@ function rebuildARScene() {
   scene.innerHTML = `
     <a-assets>
       <img id="profile-pic" src="profile.jpg" crossorigin="anonymous">
+      <a-asset-item id="avatar-3d" src="assets/avatar.glb"></a-asset-item>
     </a-assets>
 
     <a-marker id="hiro-marker" ${markerAttr}>
@@ -375,6 +376,15 @@ function rebuildARScene() {
       <!-- Satellites (Red) -->
       <a-sphere position=" 0.7 0.6  0.7" radius="0.045" material="color:#ef4444; emissive:#ef4444; emissiveIntensity:0.4;" animation="property:position; from:0.7 0.6 0.7; to:0.7 0.9 0.7; dir:alternate; loop:true; dur:900;"></a-sphere>
       <a-sphere position="-0.7 0.6 -0.7" radius="0.045" material="color:#991b1b; emissive:#991b1b; emissiveIntensity:0.4;" animation="property:position; from:-0.7 0.6 -0.7; to:-0.7 0.9 -0.7; dir:alternate; loop:true; dur:1100;"></a-sphere>
+
+      <!-- 3D GLTF Avatar Model (Walking Cesium Man) -->
+      <a-entity
+        gltf-model="#avatar-3d"
+        position="0.9 0 0.2"
+        rotation="0 45 0"
+        scale="0.25 0.25 0.25"
+        animation-mixer
+      ></a-entity>
 
     </a-marker>
     
