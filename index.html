@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Firmas Habibi — WebAR Card</title>
+  <meta name="description" content="Personal WebAR interactive business card of Firmas Habibi, Fullstack Developer." />
+  <link rel="stylesheet" href="css/global.css" />
+
+  <!-- A-Frame & AR.js dimuat langsung untuk kesiapan kamera cepat -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.4.2/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <!-- Marker Creator UMD untuk konversi Gambar ke .patt dinamis -->
+  <script src="https://raw.githack.com/AR-js-org/Marker-Creator/main/dist/marker-creator.umd.js"></script>
+  
+  <!-- Logika Helper & Controller Utama -->
+  <script src="js/utils.js"></script>
+  <script src="js/main.js"></script>
+</head>
+
+<body>
+  <!-- ══ HUD SYSTEM (Melayang di atas Kamera) ═══════════════════════ -->
+  <div class="hud-layer">
+    
+    <!-- Header Melayang -->
+    <header class="hud-header hud-interactive">
+      <div class="hud-brand">
+        <span class="hud-title">WebAR Card</span>
+        <span class="hud-subtitle">Fullstack - Developer</span>
+      </div>
+      
+      <!-- Group Kontrol HUD (Upload & Preview) -->
+      <div class="hud-controls-group">
+        <!-- Tombol Unggah Gambar Kustom Melayang -->
+        <div class="hud-btn-round" title="Unggah Pola Gambar (.png/.jpg) Anda">
+          📂
+          <input type="file" id="patt-file" accept="image/png, image/jpeg" style="position:absolute; inset:0; opacity:0; cursor:pointer;">
+        </div>
+        <!-- Tombol Tampilkan Marker -->
+        <button class="hud-btn-round" id="btn-marker-preview" title="Tampilkan Marker Real Madrid">
+          📷
+        </button>
+      </div>
+    </header>
+
+    <!-- Status Pelacakan -->
+    <div class="hud-status-card" id="ar-status">
+      <div class="status-dot"></div>
+      <span class="ar-msg">Mencari marker Hiro...</span>
+    </div>
+
+    <!-- Notifikasi Unggah Pola Sukses -->
+    <div class="hud-toast-notif" id="patt-toast">
+      ✓ Pola Marker Kustom Berhasil Dimuat!
+    </div>
+
+  </div>
+
+  <!-- ══ AR VIEWPORT (Kamera penuh di latar belakang) ═══════════════ -->
+  <div class="ar-wrap" id="ar-viewport-container">
+    <a-scene
+      embedded
+      arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+      vr-mode-ui="enabled: false"
+      renderer="logarithmicDepthBuffer: true; antialias: true;"
+    >
+      <!-- Registrasi Asset Foto Profil -->
+      <a-assets>
+        <img id="profile-pic" src="profile.jpg" crossorigin="anonymous">
+      </a-assets>
+
+      <!-- Secara default melacak marker Hiro sebelum pengguna mengunggah .png kustom mereka -->
+      <a-marker preset="hiro" id="hiro-marker">
+
+        <!-- Glowing Ring (Alas Merah) -->
+        <a-torus
+          position="0 0.05 0"
+          radius="0.65"
+          radius-tubular="0.015"
+          rotation="90 0 0"
+          material="color:#ef4444; opacity:0.8; transparent:true; emissive:#ef4444; emissiveIntensity:1.5;"
+          animation="property:rotation; from:90 0 0; to:90 360 0; loop:true; dur:4000; easing:linear;">
+        </a-torus>
+
+        <!-- Outer Ring (Rotasi Terbalik) -->
+        <a-torus
+          position="0 0.05 0"
+          radius="0.8"
+          radius-tubular="0.01"
+          rotation="90 0 0"
+          material="color:#7f1d1d; opacity:0.5; transparent:true; wireframe:true;"
+          animation="property:rotation; from:90 360 0; to:90 0 0; loop:true; dur:6000; easing:linear;">
+        </a-torus>
+
+        <!-- Virtual Card Plane (Melayang Leaning back & Hover) -->
+        <a-entity
+          position="0 0.5 0"
+          rotation="-60 0 0"
+          animation="property:position; from:0 0.45 0; to:0 0.58 0; dir:alternate; loop:true; dur:2000; easing:easeInOutSine;"
+          animation__rot="property:rotation; from:-60 -8 0; to:-60 8 0; dir:alternate; loop:true; dur:3200; easing:easeInOutSine;"
+        >
+          <!-- Background Kartu Hitam -->
+          <a-box
+            position="0 0 0"
+            width="2.5"
+            height="1.3"
+            depth="0.02"
+            material="color:#050508; opacity:0.95; transparent:true; roughness:0.8; metalness:0.2;"
+          >
+            <!-- Border glowing merah -->
+            <a-box
+              position="0 0 0"
+              width="2.52"
+              height="1.32"
+              depth="0.025"
+              material="color:#ef4444; wireframe:true; opacity:0.8; emissive:#ef4444; emissiveIntensity:0.5;"
+            ></a-box>
+          </a-box>
+
+          <!-- Sisi Kiri: Frame Foto Profil -->
+          <a-box
+            position="-0.78 -0.05 0.015"
+            width="0.66"
+            height="0.86"
+            depth="0.01"
+            material="color:#ef4444; emissive:#ef4444; emissiveIntensity:0.3;"
+          >
+            <a-image
+              src="#profile-pic"
+              width="0.62"
+              height="0.82"
+              position="0 0 0.01"
+            ></a-image>
+          </a-box>
+
+          <!-- Sisi Kanan: Teks Biodata Kustom -->
+          <!-- Header -->
+          <a-text
+            value="// BIODATA"
+            position="-0.38 0.48 0.02"
+            color="#ef4444"
+            width="3.2"
+            font="https://cdn.aframe.io/fonts/Exo2Bold.fnt"
+          ></a-text>
+          <a-text
+            value="ID_FRM205"
+            position="0.52 0.48 0.02"
+            color="#ef4444"
+            width="2.6"
+            font="https://cdn.aframe.io/fonts/Exo2Bold.fnt"
+            align="right"
+          ></a-text>
+          <a-plane
+            position="0.22 0.42 0.02"
+            width="1.25"
+            height="0.006"
+            material="color:#ef4444; opacity:0.6;"
+          ></a-plane>
+
+          <!-- Row 1: Full Name -->
+          <a-text value="FULL NAME //" position="-0.38 0.22 0.02" color="#ef4444" width="2.1" font="https://cdn.aframe.io/fonts/Exo2Bold.fnt"></a-text>
+          <a-text value="FIRMAS HABIBI" position="0.18 0.22 0.02" color="#ffffff" width="2.1" font="https://cdn.aframe.io/fonts/DejaVu-sdf.fnt"></a-text>
+
+          <!-- Row 2: Role -->
+          <a-text value="ROLE //" position="-0.38 0.07 0.02" color="#ef4444" width="2.1" font="https://cdn.aframe.io/fonts/Exo2Bold.fnt"></a-text>
+          <a-text value="FULLSTACK ENGINEER" position="0.18 0.07 0.02" color="#ffffff" width="2.1" font="https://cdn.aframe.io/fonts/DejaVu-sdf.fnt"></a-text>
+
+          <!-- Row 3: Core Stack -->
+          <a-text value="CORE STACK //" position="-0.38 -0.08 0.02" color="#ef4444" width="2.1" font="https://cdn.aframe.io/fonts/Exo2Bold.fnt"></a-text>
+          <a-text value="REACT * NODE.JS" position="0.18 -0.08 0.02" color="#ffffff" width="2.1" font="https://cdn.aframe.io/fonts/DejaVu-sdf.fnt"></a-text>
+
+          <!-- Row 4: Location -->
+          <a-text value="LOCATION //" position="-0.38 -0.23 0.02" color="#ef4444" width="2.1" font="https://cdn.aframe.io/fonts/Exo2Bold.fnt"></a-text>
+          <a-text value="INDONESIA * SUMATERA UTARA" position="0.18 -0.23 0.02" color="#ffffff" width="1.9" font="https://cdn.aframe.io/fonts/DejaVu-sdf.fnt"></a-text>
+
+          <!-- Row 5: Focus -->
+          <a-text value="FOCUS //" position="-0.38 -0.38 0.02" color="#ef4444" width="2.1" font="https://cdn.aframe.io/fonts/Exo2Bold.fnt"></a-text>
+          <a-text value="HIGH-PERFORMANCE SYSTEMS &\nINTERACTIVE APPS" position="0.18 -0.38 0.02" color="#ffffff" width="1.7" line-height="20" font="https://cdn.aframe.io/fonts/DejaVu-sdf.fnt"></a-text>
+
+          <!-- 3D Clickable Buttons (Gaze 3 Detik) -->
+          <!-- Button 1: Portfolio -->
+          <a-box
+            class="clickable"
+            link-handler="url: https://www.frmshbi.dev/projects"
+            position="-0.7 -0.85 0.02"
+            width="0.55"
+            height="0.2"
+            depth="0.04"
+            material="color: #0c0d12; roughness: 0.5; metalness: 0.5; emissive: #ef4444; emissiveIntensity: 0.1;"
+          >
+            <a-box
+              position="0 0 0"
+              width="0.57"
+              height="0.22"
+              depth="0.042"
+              material="color: #ef4444; wireframe: true; opacity: 0.5;"
+            ></a-box>
+            <a-text
+              value="Portfolio"
+              align="center"
+              position="0 0 0.025"
+              color="#ffffff"
+              width="2.0"
+              font="https://cdn.aframe.io/fonts/Exo2Bold.fnt"
+            ></a-text>
+          </a-box>
+
+          <!-- Button 2: GitHub -->
+          <a-box
+            class="clickable"
+            link-handler="url: https://github.com/firmashabibii"
+            position="0 -0.85 0.02"
+            width="0.55"
+            height="0.2"
+            depth="0.04"
+            material="color: #0c0d12; roughness: 0.5; metalness: 0.5; emissive: #ef4444; emissiveIntensity: 0.1;"
+          >
+            <a-box
+              position="0 0 0"
+              width="0.57"
+              height="0.22"
+              depth="0.042"
+              material="color: #ef4444; wireframe: true; opacity: 0.5;"
+            ></a-box>
+            <a-text
+              value="GitHub"
+              align="center"
+              position="0 0 0.025"
+              color="#ffffff"
+              width="2.0"
+              font="https://cdn.aframe.io/fonts/Exo2Bold.fnt"
+            ></a-text>
+          </a-box>
+
+          <!-- Button 3: Instagram -->
+          <a-box
+            class="clickable"
+            link-handler="url: https://www.instagram.com/frmshbi/?hl=en"
+            position="0.7 -0.85 0.02"
+            width="0.55"
+            height="0.2"
+            depth="0.04"
+            material="color: #0c0d12; roughness: 0.5; metalness: 0.5; emissive: #ef4444; emissiveIntensity: 0.1;"
+          >
+            <a-box
+              position="0 0 0"
+              width="0.57"
+              height="0.22"
+              depth="0.042"
+              material="color: #ef4444; wireframe: true; opacity: 0.5;"
+            ></a-box>
+            <a-text
+              value="Instagram"
+              align="center"
+              position="0 0 0.025"
+              color="#ffffff"
+              width="2.0"
+              font="https://cdn.aframe.io/fonts/Exo2Bold.fnt"
+            ></a-text>
+          </a-box>
+
+        </a-entity>
+
+        <!-- Floating Tech Core (Merah) -->
+        <a-octahedron
+          position="0 1.1 0"
+          radius="0.14"
+          material="color:#ef4444; metalness:0.8; roughness:0.2; emissive:#ef4444; emissiveIntensity:0.8;"
+          animation="property:position; from:0 1.05 0; to:0 1.25 0; dir:alternate; loop:true; dur:1200; easing:easeInOutSine;"
+          animation__rot="property:rotation; to:360 360 360; loop:true; dur:4000; easing:linear;">
+        </a-octahedron>
+
+        <!-- Satellites (Merah) -->
+        <a-sphere position=" 0.7 0.6  0.7" radius="0.045" material="color:#ef4444; emissive:#ef4444; emissiveIntensity:0.4;" animation="property:position; from:0.7 0.6 0.7; to:0.7 0.9 0.7; dir:alternate; loop:true; dur:900;"></a-sphere>
+        <a-sphere position="-0.7 0.6 -0.7" radius="0.045" material="color:#991b1b; emissive:#991b1b; emissiveIntensity:0.4;" animation="property:position; from:-0.7 0.6 -0.7; to:-0.7 0.9 -0.7; dir:alternate; loop:true; dur:1100;"></a-sphere>
+
+      </a-marker>
+
+      <!-- Kamera dengan Raycaster & Kursor Bulat Merah (Gaze 3 Detik) -->
+      <a-entity camera>
+        <a-cursor
+          id="fuse-cursor"
+          fuse="true"
+          fuse-timeout="3000"
+          raycaster="objects: .clickable"
+          geometry="primitive: ring; radiusOuter: 0.03; radiusInner: 0.02;"
+          material="color: #ef4444; shader: flat; opacity: 0.8;"
+          position="0 0 -1"
+          animation__fusing="property: scale; startEvents: fusing; easing: easeInQuad; dur: 3000; from: 1 1 1; to: 0.1 0.1 0.1;"
+          animation__mouseleave="property: scale; startEvents: mouseleave; easing: easeInQuad; dur: 100; to: 1 1 1;"
+        ></a-cursor>
+      </a-entity>
+    </a-scene>
+  </div>
+
+  <!-- ══ MODAL PRATINJAU MARKER REAL MADRID KUSTOM ═══════════════════ -->
+  <div class="hud-modal hud-interactive" id="marker-modal">
+    <div class="hud-modal-card">
+      <h3>Cetak / Pindai Marker Real Madrid</h3>
+      <p>Arahkan kamera ke marker kustom di bawah ini. Anda dapat mengunggah file gambar marker ini menggunakan tombol folder 📂 di atas layar.</p>
+      
+      <div class="hud-marker-img">
+        <!-- SVG Representasi Presisi Kustom Marker Real Madrid Anda -->
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <!-- Black Outer Border -->
+          <rect width="100" height="100" fill="white" />
+          <rect x="8" y="8" width="84" height="84" fill="black" />
+          <!-- White Center Area -->
+          <rect x="22" y="22" width="56" height="56" fill="white" />
+          <!-- Real Madrid Crest Silhouette Inside White Area -->
+          <!-- Crown structure on top -->
+          <path d="M42 36 L40 28 L46 32 L50 26 L54 32 L60 28 L58 36 Z" fill="#fbc531" />
+          <circle cx="50" cy="27" r="1.5" fill="#ef4444" />
+          <circle cx="40" cy="29" r="1" fill="#ef4444" />
+          <circle cx="60" cy="29" r="1" fill="#ef4444" />
+          <!-- Crown bottom horizontal band -->
+          <rect x="42" y="34" width="16" height="2" fill="#ef4444" />
+          <!-- Main Outer Gold Circle -->
+          <circle cx="50" cy="52" r="14" fill="none" stroke="#fbc531" stroke-width="2.5" />
+          <!-- Inner Blue Circle -->
+          <circle cx="50" cy="52" r="12" fill="none" stroke="#3b82f6" stroke-width="1.2" />
+          <!-- Diagonal Purple/Blue Ribbon crossing left-to-right -->
+          <path d="M41 43 L59 61 L56 64 L38 46 Z" fill="#3b82f6" />
+          <!-- Monogram Stylized MCF gold paths -->
+          <path d="M46 48 C 46 45, 54 45, 54 48 C 54 51, 46 51, 46 54 C 46 56, 54 56, 54 54" fill="none" stroke="#fbc531" stroke-width="1.8" stroke-linecap="round" />
+          <line x1="50" y1="45" x2="50" y2="59" stroke="#fbc531" stroke-width="1.8" stroke-linecap="round" />
+        </svg>
+      </div>
+
+      <button class="btn-close-modal" id="btn-close-modal">Tutup</button>
+    </div>
+  </div>
+
+  <!-- ══ CAMERA BLOCK PANEL ════════════════════════════════════════ -->
+  <div id="no-cam" class="device-block-panel" style="display:none;">
+    <div style="font-size:56px;"></div>
+    <h2>Akses Kamera Terblokir</h2>
+    <p>Aplikasi WebAR membutuhkan akses kamera dan koneksi HTTPS/localhost yang aman.</p>
+    <code>npx serve .</code>
+    <p>Jalankan server lokal lalu buka di peramban Anda melalui: <strong>http://localhost:3000</strong></p>
+  </div>
+</body>
+
+</html>

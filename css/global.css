@@ -1,0 +1,570 @@
+/* ═══════════════════════════════════════════════════════
+   global.css — Single-Page WebAR Portfolio
+   Firmas Habibi — Cyber Yellow HUD Styles
+   ═══════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg:           #030712;
+  --surface:      rgba(17, 24, 39, 0.7);
+  --surface2:     rgba(31, 41, 55, 0.55);
+  --border:       rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(239, 68, 68, 0.4);
+  
+  --text:         #f3f4f6;
+  --muted:        #9ca3af;
+  
+  /* Cyber Red / Crimson Themes */
+  --cyan:         #ef4444;  /* Cyber Red */
+  --purple:       #991b1b;  /* Crimson Red */
+  --green:        #10b981;
+  --yellow:       #fbc531;
+  --red:          #ef4444;
+  --blue:         #3b82f6;
+
+  --grad-cyan-purple: linear-gradient(135deg, #ef4444 0%, #991b1b 100%);
+  --grad-blue-cyan:   linear-gradient(135deg, #991b1b 0%, #ef4444 100%);
+  --grad-purple-red:  linear-gradient(135deg, #ef4444 0%, #7f1d1d 100%);
+  
+  --radius-sm:    8px;
+  --radius-md:    12px;
+  --radius-lg:    20px;
+  --font:         'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-title:   'Space Grotesk', system-ui, sans-serif;
+  
+  --glow-cyan:    0 0 15px rgba(239, 68, 68, 0.35);
+  --shadow-lg:    0 10px 30px -10px rgba(0, 0, 0, 0.7);
+}
+
+/* ── Reset & Core ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font);
+  background: #000;
+  color: var(--text);
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* Background Blurs */
+body::before {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(100px);
+  opacity: 0.15;
+  top: 20%;
+  left: 10%;
+  background: var(--cyan);
+}
+
+/* ── AR Camera Viewport ── */
+.ar-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+}
+
+.ar-wrap a-scene {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 1;
+}
+
+/* Hide standard A-Frame VR buttons */
+.a-enter-vr { display: none !important; }
+
+/* ── HUD Overlay Layer ── */
+.hud-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.hud-interactive {
+  pointer-events: auto;
+}
+
+/* ── HUD Header ── */
+.hud-header {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 64px;
+  background: linear-gradient(to bottom, rgba(3, 7, 18, 0.8) 0%, transparent 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+
+.hud-brand {
+  display: flex;
+  flex-direction: column;
+}
+.hud-title {
+  font-family: var(--font-title);
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  background: linear-gradient(90deg, #fff, var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hud-subtitle {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.hud-controls-group {
+  display: flex;
+  gap: 8px;
+}
+
+/* Floating Action Button */
+.hud-btn-round {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+}
+.hud-btn-round:hover {
+  background: rgba(251, 197, 49, 0.2);
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+/* ── HUD Status Bar ── */
+.hud-status-card {
+  position: absolute;
+  top: 76px;
+  left: 24px;
+  background: rgba(17, 24, 39, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  font-family: var(--font-title);
+  color: var(--text);
+}
+.hud-status-card.found {
+  border-color: rgba(251, 197, 49, 0.4);
+  box-shadow: var(--glow-cyan);
+}
+.hud-status-card .status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+  animation: pulse-status 1.2s infinite;
+}
+.hud-status-card.found .status-dot {
+  background: var(--green);
+  animation: none;
+}
+@keyframes pulse-status { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* ── HUD Biodata Floating Card (Slide up from bottom) ── */
+.hud-bio-container {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translate(-50%, 120%);
+  opacity: 0;
+  width: min(480px, calc(100% - 48px));
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--shadow-lg);
+}
+
+.hud-bio-container.active {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+
+.hud-bio-card {
+  background: rgba(10, 15, 30, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: border-color 0.3s;
+}
+.hud-bio-card:hover {
+  border-color: var(--border-hover);
+}
+
+/* Avatar & Title */
+.hud-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.hud-avatar {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 2px solid var(--cyan);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 0 10px rgba(251, 197, 49, 0.2);
+}
+.hud-profile-info h3 {
+  font-family: var(--font-title);
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text);
+}
+.hud-profile-info p {
+  font-size: 11px;
+  color: var(--cyan);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Quote Section */
+.hud-quote-box {
+  border-left: 2.5px solid var(--cyan);
+  padding-left: 12px;
+  margin: 2px 0;
+  font-style: italic;
+  font-size: 12.5px;
+  color: var(--text);
+  line-height: 1.5;
+  background: rgba(251, 197, 49, 0.02);
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-radius: 0 4px 4px 0;
+}
+
+/* Biodata details */
+.hud-bio-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 12px;
+  border-radius: var(--radius-md);
+}
+.hud-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.hud-detail-item .lbl {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.hud-detail-item .val {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Links Buttons list */
+.hud-links-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.hud-link-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-title);
+  font-size: 10px;
+  font-weight: 600;
+  transition: all 0.25s ease;
+  text-decoration: none;
+}
+.hud-link-btn:hover {
+  background: var(--surface2);
+  border-color: var(--cyan);
+  color: var(--cyan);
+  transform: translateY(-2px);
+}
+.hud-link-btn .icon {
+  font-size: 16px;
+}
+
+/* ── Real Madrid Custom Marker Modal Popup ── */
+.hud-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(3, 7, 18, 0.88);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  padding: 24px;
+}
+.hud-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.hud-modal-card {
+  background: rgba(17, 24, 39, 0.95);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  max-width: 340px;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--shadow-lg);
+}
+.hud-modal-card h3 {
+  font-family: var(--font-title);
+  font-size: 16px;
+  color: var(--text);
+}
+.hud-modal-card p {
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.hud-marker-img {
+  background: #fff;
+  border-radius: var(--radius-md);
+  padding: 12px;
+  width: 170px; height: 170px;
+  margin: 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+.hud-marker-img svg {
+  width: 100%; height: 100%;
+}
+.btn-close-modal {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-title);
+}
+.btn-close-modal:hover {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+}
+
+/* Notification pop */
+.hud-toast-notif {
+  position: absolute;
+  top: 76px;
+  right: 24px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid var(--green);
+  color: var(--green);
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-family: var(--font-title);
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.hud-toast-notif.active {
+  opacity: 1;
+}
+
+/* ── Camera blocked panel ── */
+.device-block-panel {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 32px;
+  text-align: center;
+  z-index: 9999;
+}
+.device-block-panel h2 {
+  color: var(--red);
+  font-family: var(--font-title);
+  font-size: 20px;
+}
+.device-block-panel p {
+  max-width: 320px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.device-block-panel code {
+  font-family: var(--font-mono);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--cyan);
+  padding: 3px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+}
+
+/* ── Responsive Mobile HUD Styles ── */
+@media (max-width: 480px) {
+  .hud-header {
+    padding: 0 16px;
+    height: 56px;
+  }
+  .hud-title {
+    font-size: 14px;
+  }
+  .hud-subtitle {
+    font-size: 10px;
+  }
+  .hud-btn-round {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+  .hud-status-card {
+    top: 68px;
+    left: 16px;
+    padding: 6px 10px;
+    font-size: 10.5px;
+  }
+  .hud-toast-notif {
+    top: 68px;
+    right: 16px;
+    padding: 6px 10px;
+    font-size: 10px;
+  }
+  .hud-bio-container {
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    transform: translate(0, 120%);
+  }
+  .hud-bio-container.active {
+    transform: translate(0, 0);
+  }
+  .hud-bio-card {
+    padding: 16px;
+    gap: 12px;
+    border-radius: var(--radius-md);
+  }
+  .hud-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  .hud-profile-info h3 {
+    font-size: 15px;
+  }
+  .hud-profile-info p {
+    font-size: 10px;
+  }
+  .hud-quote-box {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+  .hud-bio-details {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 8px;
+  }
+  .hud-detail-item .lbl {
+    font-size: 8px;
+  }
+  .hud-detail-item .val {
+    font-size: 11px;
+  }
+  .hud-link-btn {
+    padding: 6px 2px;
+    font-size: 9px;
+  }
+  .hud-link-btn .icon {
+    font-size: 14px;
+  }
+  .hud-modal-card {
+    padding: 18px;
+    max-width: 290px;
+    gap: 12px;
+    border-radius: var(--radius-md);
+  }
+  .hud-marker-img {
+    width: 140px;
+    height: 140px;
+    padding: 8px;
+  }
+}
+
+/* ── AR Camera Fullscreen Responsive Overrides ── */
+html, body, html.a-html, body.a-body {
+  overflow: hidden !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Force video generated by AR.js and canvas created by A-Frame to cover background */
+body > video, 
+body > .a-canvas,
+.ar-wrap video,
+.ar-wrap .a-canvas,
+#ar-viewport-container video,
+#ar-viewport-container .a-canvas {
+  width: 100vw !important;
+  height: 100vh !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  z-index: 1 !important;
+  object-fit: cover !important; /* Menjamin video memenuhi layar HP tanpa distorsi/gepeng */
+  margin: 0 !important;
+  padding: 0 !important;
+}
