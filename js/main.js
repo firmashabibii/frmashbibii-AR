@@ -81,7 +81,40 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
   }
+
+  // 4. Inisialisasi Otomatis Pola Real Madrid dari SVG Tersembunyi saat Startup
+  initDefaultRealMadridPattern();
 });
+
+function initDefaultRealMadridPattern() {
+  const svg = document.getElementById('inner-crest-svg');
+  if (!svg) {
+    rebuildARScene();
+    return;
+  }
+
+  const svgString = new XMLSerializer().serializeToString(svg);
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 16;
+    canvas.height = 16;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, 16, 16);
+    const pngDataUrl = canvas.toDataURL('image/png');
+    
+    if (window.MarkerCreator && window.MarkerCreator.ArPatternFile) {
+      window.MarkerCreator.ArPatternFile.encodeImageURL(pngDataUrl, (patternString) => {
+        const blob = new Blob([patternString], { type: 'text/plain' });
+        currentPattUrl = URL.createObjectURL(blob);
+        rebuildARScene();
+      });
+    } else {
+      rebuildARScene();
+    }
+  };
+  img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString)));
+}
 
 function loadPattFile(file) {
   const reader = new FileReader();
@@ -132,12 +165,14 @@ function rebuildARScene() {
   scene.setAttribute('renderer', 'logarithmicDepthBuffer: true; antialias: true;');
   scene.style.cssText = 'position:absolute;inset:0;';
 
+  const markerAttr = currentPattUrl ? `type="pattern" url="${currentPattUrl}"` : 'preset="hiro"';
+
   scene.innerHTML = `
     <a-assets>
       <img id="profile-pic" src="profile.jpg" crossorigin="anonymous">
     </a-assets>
 
-    <a-marker id="hiro-marker" type="pattern" url="${currentPattUrl}">
+    <a-marker id="hiro-marker" ${markerAttr}>
       
       <!-- Glowing Ring (Alas Merah) -->
       <a-torus
